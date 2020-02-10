@@ -25,13 +25,13 @@ def run():
     # res = predict(km, t0, t1)
     
     # Visu
-    x = np.array(range(250000))
+    x = np.array(range(50))
     # y = t0 + t1 * x #t0 - t1 * km # intercept + slope * x
-    y = 10000 - 0.04 * x
+    y = t0 + t1 * x
     plt.plot(x, y)
     # plt.plot(x, y, '-r', label='y=θ0+θ1*kilometers')
     plt.plot(visu[0], visu[1], 'bo')
-    plt.axis([0, 250000, 0, 9000])
+    plt.axis([0, 50, 0, 50])
     plt.xlabel("kilometers")
     plt.ylabel("price")
     plt.title('ft_linear_regression')
