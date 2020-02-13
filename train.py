@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 
-def showVisu(X, Y, t0, t1):
+def showVisu(X, Y, t0, t1, normalize=True):
     Yp = []
     for x in X:
         Yp.append(t0 + t1 * x)
@@ -9,8 +9,17 @@ def showVisu(X, Y, t0, t1):
     plt.xlabel("kilometers")
     plt.ylabel("price")
     plt.title('ft_linear_regression')
+    if not normalize:
+        plt.axis([0, 250000, 0, 9000])
     plt.grid(alpha=.4,linestyle='--')
     plt.show()
+
+def cost(X, Y, t0, t1):
+    N = len(X)
+    error = 0.0
+    for i in range(N):
+        error += abs((t0 + t1 * X[i]) - Y[i])
+    return (error / N)
 
 def gradient_descent(X, Y,t0, t1, learning_rate, num_iterations):
     N = len(X)
@@ -24,7 +33,6 @@ def gradient_descent(X, Y,t0, t1, learning_rate, num_iterations):
         t0 =  t0 - (learning_rate * t0_gradient * 1/float(N))
         t1 =  t1 - (learning_rate * t1_gradient * 1/float(N))
     return [t0,t1]
-
 
 def normalize(X, Y):
     maxX = float(max(X))
@@ -43,14 +51,6 @@ def denormalize(X, Y, t0_normalize, t1_normalize):
     t1 = t1_normalize * (maxY - minY) / (maxX - minX)
     t0 = t0_normalize * (maxY - minY) + minY - t1 * minX
     return [t0, t1]
-    
-
-def cost(X, Y, t0, t1):
-    N = len(X)
-    error = 0.0
-    for i in range(N):
-        error += abs((t0 + t1 * X[i]) - Y[i])
-    return (error / N)
 
 def train():
     learning_rate = 0.1
@@ -71,15 +71,23 @@ def train():
     except Exception as e:
         raise Exception(e)
 
-
     Xn, Yn = normalize(X, Y)
     t0_normalize, t1_normalize = gradient_descent(Xn, Yn, initial_t0, initial_t1, learning_rate, num_iterations)
     t0, t1 = denormalize(X, Y, t0_normalize, t1_normalize)
-    print(cost(X, Y, t0, t1))
-    print("t0 = {0}".format(t0))
-    print("t1 = {0}".format(t1))
-    print("t0_normalize = {0}".format(t0_normalize))
-    print("t1_normalize = {0}".format(t1_normalize))
+
+    try:
+        f = open("thetas.csv", "w+")
+        f.write(str(t0) + "," + str(t1))
+        f.close()
+    except Exception as e:
+        raise Exception(e)
+
+    print("theta0 = {0:.3f}".format(t0))
+    print("theta1 = {0:.3f}".format(t1))
+    print("Average error: {0:.3f}".format(cost(X, Y, t0, t1)))
+
     showVisu(Xn, Yn, t0_normalize, t1_normalize)
-    showVisu(X, Y, t0, t1)
-    return (t0, t1)
+    showVisu(X, Y, t0, t1, False)
+
+if __name__== '__main__':
+    train()
