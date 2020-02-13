@@ -34,14 +34,19 @@ def gradient_descent(X, Y,t0, t1, learning_rate, num_iterations):
         t1 =  t1 - (learning_rate * t1_gradient * 1/float(N))
     return [t0,t1]
 
-def normalize(X, Y):
+def normalize(X, Y, initial_t0):
+    #Normalize X and Y on 0,1
     maxX = float(max(X))
     minX = float(min(X))
     maxY = float(max(Y))
     minY = float(min(Y))
     Xnormalize = list(map((lambda x: (float(x) - minX)/(maxX - minX)), X))
     Ynormalize = list(map((lambda y: (float(y) - minY)/(maxY - minY)), Y))
-    return [Xnormalize, Ynormalize]
+
+    #Normalize initial value of t0
+    t0 = (float(initial_t0) - minX)/(maxX - minX)
+    
+    return [Xnormalize, Ynormalize, t0]
 
 def denormalize(X, Y, t0_normalize, t1_normalize):
     maxX = float(max(X))
@@ -54,7 +59,7 @@ def denormalize(X, Y, t0_normalize, t1_normalize):
 
 def train():
     learning_rate = 0.1
-    initial_t0 = 0.0
+    initial_t0 = 1.0
     initial_t1 = 0.0
     num_iterations = 1000
     try:
@@ -71,7 +76,7 @@ def train():
     except Exception as e:
         raise Exception(e)
 
-    Xn, Yn = normalize(X, Y)
+    Xn, Yn, initial_t0 = normalize(X, Y, initial_t0)
     t0_normalize, t1_normalize = gradient_descent(Xn, Yn, initial_t0, initial_t1, learning_rate, num_iterations)
     t0, t1 = denormalize(X, Y, t0_normalize, t1_normalize)
 
